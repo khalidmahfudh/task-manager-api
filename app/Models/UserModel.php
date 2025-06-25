@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-
+use App\Entities\User;
 class UserModel extends Model
 {
     protected $table            = 'users';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-    protected $returnType       = 'object';
+    protected $returnType       = User::class;
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = ['name', 'email', 'password', 'role'];
