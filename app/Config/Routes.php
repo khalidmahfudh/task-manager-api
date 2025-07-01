@@ -10,5 +10,6 @@ $routes->get('/', '');
 $routes->group('api', function($routes) {
     $routes->group('auth', function($routes) {
         $routes->post('register', 'Api\Auth\RegisterController::register');
+        $routes->post('login', 'Api\Auth\LoginController::login');
     });
 });
