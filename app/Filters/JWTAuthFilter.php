@@ -6,14 +6,17 @@ use App\Services\AuthService;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
+use Config\Services;
 use Exception;
 
 class JWTAuthFilter implements FilterInterface
 {
     protected $authService;
+    protected $cache;
 
     public function __construct() {
         $this->authService = new AuthService();
+        $this->cache = Services::cache();
     }
 
     /**
@@ -48,7 +51,14 @@ class JWTAuthFilter implements FilterInterface
             return service('response')->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED)->setJSON(['status' => 401, 'error' => true, 'message' => 'Authentication required. Token not provided.']);
         }
 
-        // 3. Validasi Token menggunakan AuthService.
+        // 3. Periksa apakah Token ada di blacklist.
+        $blacklistKey = 'blacklist_jwt_' . md5($token);
+        if ($this->cache->get($blacklistKey)) {
+            // Jika token ada di blacklist, tolak akses.
+            return service('response')->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED)->setJSON(['status' => 401, 'error' => true, 'message' => 'Token has been invalidated (logged out).']);
+        }
+
+        // 4. Validasi Token menggunakan AuthService.
         try {
             // Panggil AuthService untuk memvalidasi token.
             $decodedToken = $this->authService->validateToken($token);
@@ -67,8 +77,7 @@ class JWTAuthFilter implements FilterInterface
 
         } catch (Exception $e) {
             // Jika AuthService melempar exception (token tidak valid, kedaluwarsa, dll.)
-            return service('response')->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED)
-                                     ->setJSON(['status' => 401, 'error' => true, 'message' => $e->getMessage()]);
+            return service('response')->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED)->setJSON(['status' => 401, 'error' => true, 'message' => $e->getMessage()]);
         }
     }
 

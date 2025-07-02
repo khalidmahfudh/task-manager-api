@@ -1,3 +1,5 @@
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUxNDI4NTE5LCJleHAiOjE3NTE0MzIxMTksIm5iZiI6MTc1MTQyODUxOSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.zdEKOtMg-uwdrMDEvIOhvTg7jDzRPNmg-BVCaihEh9Y
+
 ###
 # Register
 POST http://localhost:8080/api/auth/register
@@ -19,6 +21,12 @@ Content-Type: application/json
     "email": "admin@example.com",
     "password": "password"
 }
+
+###
+# Logout
+GET http://localhost:8080/api/auth/logout HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
 
 ###
 # Test
