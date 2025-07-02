@@ -12,4 +12,9 @@ $routes->group('api', function($routes) {
         $routes->post('register', 'Api\Auth\RegisterController::register');
         $routes->post('login', 'Api\Auth\LoginController::login');
     });
+
+    // Group route yang dilindungi oleh JWTAuthFilter
+    $routes->group('protected', ['filter' => 'jwtAuth'], function($routes) {
+        $routes->get('test', 'Api\ProtectedController::index');
+    });
 });

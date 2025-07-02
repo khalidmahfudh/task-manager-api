@@ -2,6 +2,7 @@
 
 namespace Config;
 
+use App\Filters\JWTAuthFilter;
 use CodeIgniter\Config\Filters as BaseFilters;
 use CodeIgniter\Filters\Cors;
 use CodeIgniter\Filters\CSRF;
@@ -34,6 +35,7 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
+        'jwtAuth'       => JWTAuthFilter::class,
     ];
 
     /**
@@ -103,5 +105,13 @@ class Filters extends BaseFilters
      *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        'jwtAuth' => [
+            'before' => [
+                // Terapkan filter ini ke semua route di group 'api/tasks'
+                // Ganti dengan group yang akan berisi endpoint yang perlu dilindungi
+                'api/tasks/*',
+            ],
+        ],
+    ];
 }
