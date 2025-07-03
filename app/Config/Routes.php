@@ -15,6 +15,12 @@ $routes->group('api', function($routes) {
     });
 
     // Group route yang dilindungi oleh JWTAuthFilter
+    $routes->group('profile', ['filter' => 'jwtAuth'], function($routes) {
+        $routes->get('/', 'Api\ProfileController::show'); // GET /api/profile (untuk melihat profil)
+        $routes->put('/', 'Api\ProfileController::update'); // PUT /api/profile (untuk update profil penuh)
+        $routes->patch('/', 'Api\ProfileController::update'); // PATCH /api/profile (untuk update parsial)
+    });
+
     $routes->group('protected', ['filter' => 'jwtAuth'], function($routes) {
         $routes->get('test', 'Api\ProtectedController::index');
     });
