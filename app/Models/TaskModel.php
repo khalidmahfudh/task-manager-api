@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Entities\Task;
 use CodeIgniter\Model;
 
 class TaskModel extends Model
