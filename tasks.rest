@@ -1,0 +1,24 @@
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUxODE3OTc5LCJleHAiOjE3NTE4MjE1NzksIm5iZiI6MTc1MTgxNzk3OSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.qboJBoKJRB6eRITKednuPcn13LW2jDpLqeX6bp7Nsko
+
+### Get All User Tasks
+GET http://localhost:8080/api/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+###
+# Create New Task
+POST http://localhost:8080/api/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "title": "Belajar Laravel",
+    "description": "Selesaikan tutorial Laravel sampai tuntas.",
+    "status": "in-progress",
+    "due_date": "2025-07-31 18:00:00"
+}
+
+### Get Task by ID
+GET http://localhost:8080/api/tasks/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json

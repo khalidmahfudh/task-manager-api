@@ -28,6 +28,7 @@ $routes->group('api', function($routes) {
         // Tasks API (URL: /api/tasks)
         $routes->get('tasks', 'Api\TaskController::index');
         $routes->post('tasks', 'Api\TaskController::create');
+        $routes->get('tasks/(:num)', 'Api\TaskController::show/$1');
     });
 
 

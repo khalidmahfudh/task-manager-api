@@ -64,15 +64,41 @@ class TaskController extends ResourceController
     }
 
     /**
-     * Return the properties of a resource object.
-     *
+     * Get a single task by its ID for the authenticated user.
+     * GET /api/tasks/{id}
+     * 
      * @param int|string|null $id
-     *
      * @return ResponseInterface
      */
-    public function show($id = null)
+    public function show($id = null): ResponseInterface
     {
-        //
+        // Ambil ID user dari token JWT yang sudah diverifikasi oleh filter
+        $userId = $this->request->user_id;
+
+        if (!$userId) {
+            return $this->failUnauthorized('User not authenticated.');
+        }
+
+        // Cari tugas berdasarkan ID dan pastikan itu milik user yang sedang login
+        $task = $this->model->where('id', $id)
+                            ->where('user_id', $userId)
+                            ->first(); // Gunakan first() untuk mendapatkan satu record
+
+        if (!$task) {
+            // Jika tugas tidak ditemukan atau bukan milik user ini
+            return $this->failNotFound('Task not found or not accessible.');
+        }
+
+        $response = [
+            'status'  => 200,
+            'error'   => null,
+            'messages' => [
+                'success' => 'Task retrieved successfully.'
+            ],
+            'data'    => $task
+        ];
+
+        return $this->respond($response);
     }
 
     /**
