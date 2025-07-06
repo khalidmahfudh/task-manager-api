@@ -1,4 +1,4 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUxNjg3ODQ3LCJleHAiOjE3NTE2OTE0NDcsIm5iZiI6MTc1MTY4Nzg0NywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.wop1MSa_h6eXWAowMoGpMEj90o1D7eDSpSgSxO2Ihn8
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUxNzg0MjQ2LCJleHAiOjE3NTE3ODc4NDYsIm5iZiI6MTc1MTc4NDI0NiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.3unH_8qqsWpxPHj2-brskKIa-Hd3lo1H4q0dD4cqrKA
 
 ###
 # Register
@@ -38,8 +38,6 @@ GET http://localhost:8080/api/auth/logout HTTP/1.1
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
----
-
 ###
 # Get Profile user
 GET http://localhost:8080/api/profile HTTP/1.1
@@ -67,14 +65,23 @@ Content-Type: application/json
     "name": "Hanya Nama yang Berubah"
 }
 
----
-
 ### Get All User Tasks
 GET http://localhost:8080/api/tasks
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
----
+###
+# Create New Task
+POST http://localhost:8080/api/tasks
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "title": "Belajar Laravel",
+    "description": "Selesaikan tutorial Laravel sampai tuntas.",
+    "status": "in-progress",
+    "due_date": "2025-07-31 18:00:00"
+}
 
 ###
 # Test

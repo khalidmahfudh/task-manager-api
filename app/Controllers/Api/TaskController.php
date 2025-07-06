@@ -86,13 +86,68 @@ class TaskController extends ResourceController
     }
 
     /**
-     * Create a new resource object, from "posted" parameters.
+     * Create a new task.
+     * POST /api/tasks
      *
      * @return ResponseInterface
      */
-    public function create()
+    public function create(): ResponseInterface
     {
-        //
+
+        // Ambil ID user dari token JWT yang sudah diverifikasi oleh filter
+        $userId = $this->request->user_id;
+
+        if (!$userId) {
+            return $this->failUnauthorized('User not authenticated.');
+        }
+
+        // Dapatkan data JSON dari request body
+        $input = $this->request->getJson(true); // true untuk mendapatkan array asosiatif
+
+        // Tambahkan user_id ke data input sebelum validasi dan penyimpanan
+        // Ini memastikan tugas terkait dengan user yang benar
+        $input['user_id'] = $userId;
+
+        $rules = [
+            'user_id'     => 'required|integer',
+            'title'       => 'required|min_length[3]|max_length[255]',
+            'description' => 'permit_empty|max_length[1000]',
+            'status'      => 'permit_empty|in_list[pending,in-progress,completed]',
+            'due_date'    => 'permit_empty|valid_date[Y-m-d H:i:s]' // Pastikan format tanggal sesuai
+        ];
+
+        if (!$this->validateData($input, $rules)) {
+            // Jika validasi gagal, kembalikan pesan error
+            $errors = $this->validator->getErrors(); // validator properti sudah tersedia
+            log_message('error', 'Task Creation Validation Errors: ' . json_encode($errors));
+            return $this->failValidationErrors($errors);
+        }
+
+        // Buat Task Entity baru dari data input
+        $task = new Task($input);
+
+        // Simpan task ke database
+        if ($this->model->save($task)) {
+            // Ambil kembali task yang baru disimpan dari DB untuk mendapatkan ID dan timestamps
+            $newTask = $this->model->find($this->model->getInsertID());
+
+            $response = [
+                'status'  => 201, // 201 Created
+                'error'   => null,
+                'messages' => [
+                    'success' => 'Task created successfully.'
+                ],
+                'data'    => $newTask // Mengembalikan entity Task yang sudah lengkap
+            ];
+            return $this->respondCreated($response);
+        } else {
+            $modelErrors = $this->model->errors();
+            if (!empty($modelErrors)) {
+                log_message('error', 'Task Model Save Errors: ' . json_encode($modelErrors));
+                return $this->failValidationErrors($modelErrors);
+            }
+            return $this->fail('Failed to create task.', 500);
+        }
     }
 
     /**
