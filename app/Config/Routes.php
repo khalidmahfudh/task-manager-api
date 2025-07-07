@@ -26,9 +26,15 @@ $routes->group('api', function($routes) {
         });
 
         // Tasks API (URL: /api/tasks)
-        $routes->get('tasks', 'Api\TaskController::index');
-        $routes->post('tasks', 'Api\TaskController::create');
-        $routes->get('tasks/(:num)', 'Api\TaskController::show/$1');
+        // $routes->resource('tasks', ['controller' => 'Api\TaskController', 'except' => ['new', 'edit']]);
+        $routes->group('tasks', function($routes) {
+            $routes->get('/', 'Api\TaskController::index');
+            $routes->post('/', 'Api\TaskController::create');
+            $routes->get('(:num)', 'Api\TaskController::show/$1');
+            $routes->put('(:num)', 'Api\TaskController::update/$1');
+            $routes->patch('(:num)', 'Api\TaskController::update/$1'); 
+            $routes->delete('(:num)', 'Api\TaskController::delete/$1');
+        });
     });
 
 

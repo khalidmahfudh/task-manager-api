@@ -10,7 +10,7 @@ class TaskModel extends Model
     protected $table            = 'tasks';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-    protected $returnType       = 'object';
+    protected $returnType       = Task::class;
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = ['user_id', 'title', 'description', 'status', 'due_date'];

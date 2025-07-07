@@ -1,4 +1,4 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUxODE3OTc5LCJleHAiOjE3NTE4MjE1NzksIm5iZiI6MTc1MTgxNzk3OSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.qboJBoKJRB6eRITKednuPcn13LW2jDpLqeX6bp7Nsko
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjozLCJlbWFpbCI6InVzZXJiYXJ1M0BleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzUxODgxNzcxLCJleHAiOjE3NTE4ODUzNzEsIm5iZiI6MTc1MTg4MTc3MSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.994SQUOWkdKl7JaxaGG___dA7zCatDGnCf0qSSMJvHg
 
 ### Get All User Tasks
 GET http://localhost:8080/api/tasks
@@ -19,6 +19,29 @@ Content-Type: application/json
 }
 
 ### Get Task by ID
-GET http://localhost:8080/api/tasks/1
+GET http://localhost:8080/api/tasks/8
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
+
+###
+# Put Task (update full task)
+PUT http://localhost:8080/api/tasks/8 HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "title": "Belajar ExpressJS",
+    "description": "Selesaikan tutorial ExpressJS sampai tuntas.",
+    "status": "in-progress",
+    "due_date": "2025-07-31 18:00:00"
+}
+
+###
+# Patch Task (update task parsial)
+PATCH http://localhost:8080/api/tasks/8 HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "status": "completed"
+}

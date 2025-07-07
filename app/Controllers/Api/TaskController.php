@@ -102,16 +102,6 @@ class TaskController extends ResourceController
     }
 
     /**
-     * Return a new resource object, with default properties.
-     *
-     * @return ResponseInterface
-     */
-    public function new()
-    {
-        //
-    }
-
-    /**
      * Create a new task.
      * POST /api/tasks
      *
@@ -177,38 +167,113 @@ class TaskController extends ResourceController
     }
 
     /**
-     * Return the editable properties of a resource object.
+     * Update an existing task for the authenticated user.
+     * PUT/PATCH /api/tasks/{id}
      *
-     * @param int|string|null $id
-     *
+     * @param int|string|null $id The ID of the task to update.
      * @return ResponseInterface
      */
-    public function edit($id = null)
+    public function update($id = null): ResponseInterface
     {
-        //
+        // Ambil ID user dari token JWT yang sudah diverifikasi oleh filter
+        $userId = $this->request->user_id;
+
+        if (!$userId) {
+            return $this->failUnauthorized('User not authenticated.');
+        }
+
+        // Dapatkan data JSON dari request body
+        $input = $this->request->getJson(true);
+
+        // Cari tugas yang akan diupdate dan pastikan itu milik user yang sedang login
+        $task = $this->model->where('id', $id)
+                            ->where('user_id', $userId)
+                            ->first();
+
+        if (!$task) {
+            return $this->failNotFound('Task not found or not accessible.');
+        }
+
+        // Aturan validasi untuk update (hampir sama dengan create, tapi title tidak perlu required jika tidak ada)
+        $rules = [
+            'title'       => 'permit_empty|min_length[3]|max_length[255]', // 'required' dihilangkan untuk update, karena bisa saja hanya update deskripsi
+            'description' => 'permit_empty|max_length[1000]',
+            'status'      => 'permit_empty|in_list[pending,in-progress,completed]',
+            'due_date'    => 'permit_empty|valid_date[Y-m-d H:i:s]'
+        ];
+
+        if (!$this->validateData($input, $rules)) {
+            $errors = $this->validator->getErrors();
+            log_message('error', 'Task Update Validation Errors: ' . json_encode($errors));
+            return $this->failValidationErrors($errors);
+        }
+
+        // Isi entity task yang ditemukan dengan data input baru
+        $task->fill($input);
+
+        // Jika tidak ada perubahan, save() akan mengembalikan false, tapi tanpa error
+        if ($this->model->save($task)) {
+            $updatedTask = $this->model->find($id); // Ambil task terbaru dari DB
+            $response = [
+                'status'  => 200,
+                'error'   => null,
+                'messages' => [
+                    'success' => 'Task updated successfully.'
+                ],
+                'data'    => $updatedTask
+            ];
+            return $this->respond($response);
+        } else {
+             // Check if it's a validation error from model or actual save error
+            $modelErrors = $this->model->errors();
+            if (!empty($modelErrors)) {
+                log_message('error', 'Task Model Update Errors: ' . json_encode($modelErrors));
+                return $this->failValidationErrors($modelErrors);
+            }
+            // Jika tidak ada error model, berarti tidak ada perubahan yang disimpan
+            // Atau ada masalah DB lain yang tidak ditangkap validasi model
+            return $this->fail('Failed to update task. No changes or internal server error.', 500);
+        }
     }
 
     /**
-     * Add or update a model resource, from "posted" properties.
+     * Delete a task for the authenticated user.
+     * DELETE /api/tasks/{id}
      *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
-     */
-    public function update($id = null)
-    {
-        //
-    }
-
-    /**
-     * Delete the designated resource object from the model.
-     *
-     * @param int|string|null $id
-     *
+     * @param int|string|null $id The ID of the task to delete.
      * @return ResponseInterface
      */
     public function delete($id = null)
     {
-        //
+        // Ambil ID user dari token JWT yang sudah diverifikasi oleh filter
+        $userId = $userId = $this->request->user_id;
+
+        if (!$userId) {
+            return $this->failUnauthorized('User not authenticated.');
+        }
+
+        // Cari tugas yang akan dihapus dan pastikan itu milik user yang sedang login
+        $task = $this->model->where('id', $id)
+                            ->where('user_id', $userId)
+                            ->first();
+
+        if (!$task) {
+            return $this->failNotFound('Task not found or not accessible.');
+        }
+
+        // Hapus tugas
+        if ($this->model->delete($id)) {
+            $response = [
+                'status'  => 200,
+                'error'   => null,
+                'messages' => [
+                    'success' => 'Task deleted successfully.'
+                ],
+                'data'    => ['id' => $id] // Biasanya hanya mengembalikan ID yang dihapus
+            ];
+            return $this->respondDeleted($response); 
+        } else {
+            return $this->fail('Failed to delete task.', 500);
+        }
     }
 }
