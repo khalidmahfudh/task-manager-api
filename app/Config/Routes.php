@@ -23,6 +23,7 @@ $routes->group('api', function($routes) {
             $routes->get('/', 'Api\ProfileController::show'); // GET /api/profile (untuk melihat profil)
             $routes->put('/', 'Api\ProfileController::update'); // PUT /api/profile (untuk update profil penuh)
             $routes->patch('/', 'Api\ProfileController::update'); // PATCH /api/profile (untuk update parsial)
+            $routes->put('password', 'Api\ProfileController::updatePassword');
         });
 
         // Tasks API (URL: /api/tasks)

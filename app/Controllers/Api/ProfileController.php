@@ -146,4 +146,77 @@ class ProfileController extends BaseController
             return $this->failServerError('Failed to update user profile.');
         }
     }
+
+     /**
+     * Update password for the authenticated user.
+     * Endpoint: PUT /api/password
+     *
+     * Requires: old_password, new_password, confirm_password in JSON body.
+     *
+     * @return ResponseInterface
+     */
+    public function updatePassword(): ResponseInterface
+    {
+        $userId = $this->request->user_id;
+
+        if (!$userId) {
+            return $this->failUnauthorized('User not authenticated.');
+        }
+
+        $input = $this->request->getJson(true);
+
+        if ($input === null || !is_array($input)) {
+            return $this->failValidationError('Invalid JSON body provided. Please ensure it is valid JSON.');
+        }
+
+        $rules = [
+            'old_password'     => 'required',
+            'new_password'     => 'required|min_length[8]|regex_match[/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+]{8,}$/]',
+            'confirm_password' => 'required|matches[new_password]'
+        ];
+
+        $messages = [
+            'new_password' => [
+                'regex_match' => 'Password must contain at least one uppercase letter, one number, and be at least 8 characters long.'
+            ]
+        ];
+
+        if (!$this->validateData($input, $rules, $messages)) { 
+            $errors = $this->validator->getErrors();
+            log_message('error', 'Password Update Validation Errors: ' . json_encode($errors));
+            return $this->failValidationErrors($errors);
+        }
+
+        $user = $this->userModel->find($userId);
+
+        if (!$user) {
+            log_message('error', 'ProfileController: User with ID ' . $userId . ' not found during password update.');
+            return $this->failNotFound('User not found.');
+        }
+
+        if (!password_verify($input['old_password'], $user->password)) {
+            return $this->failValidationError('Old password does not match.');
+        }
+
+        $user->password = $input['new_password'];
+
+        if ($this->userModel->save($user)) {
+            $response = [
+                'status'  => 200,
+                'error'   => false,
+                'messages' => [
+                    'success' => 'Password updated successfully.'
+                ]
+            ];
+            return $this->respond($response);
+        } else {
+            $modelErrors = $this->userModel->errors();
+            if (!empty($modelErrors)) {
+                log_message('error', 'User Model Password Update Errors: ' . json_encode($modelErrors));
+                return $this->failValidationErrors($modelErrors);
+            }
+            return $this->fail('Failed to update password. Internal server error.', 500);
+        }
+    }
+
 }

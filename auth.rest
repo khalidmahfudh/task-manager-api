@@ -1,4 +1,4 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUxODE3OTc5LCJleHAiOjE3NTE4MjE1NzksIm5iZiI6MTc1MTgxNzk3OSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.qboJBoKJRB6eRITKednuPcn13LW2jDpLqeX6bp7Nsko
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjozLCJlbWFpbCI6InVzZXJiYXJ1M0BleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzUxOTUzMzA5LCJleHAiOjE3NTE5NTY5MDksIm5iZiI6MTc1MTk1MzMwOSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.5bqKogqLYtgJzjLA7ebKEQh7brBfZ2s_1J5zj1FiIT4
 
 ###
 # Register
@@ -29,7 +29,7 @@ Content-Type: application/json
 
 {
     "email": "userbaru3@example.com",
-    "password": "password123"
+    "password": "Password123"
 }
 
 ###
@@ -63,6 +63,18 @@ Content-Type: application/json
 
 {
     "name": "Hanya Nama yang Berubah"
+}
+
+###
+# Put User Password
+PUT http://localhost:8080/api/profile/password HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "old_password": "password123",
+    "new_password": "Password123",
+    "confirm_password": "Password123"
 }
 
 ###
