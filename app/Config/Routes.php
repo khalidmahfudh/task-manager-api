@@ -39,7 +39,7 @@ $routes->group('api', function($routes) {
     });
 
 
-    $routes->group('protected', ['filter' => 'jwtAuth'], function($routes) {
+    $routes->group('protected', ['filter' => ['jwtAuth', 'adminCheck']], function($routes) {
         $routes->get('test', 'Api\ProtectedController::index');
     });
 });
