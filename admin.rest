@@ -1,0 +1,28 @@
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUyMDM2MjY4LCJleHAiOjE3NTIwMzk4NjgsIm5iZiI6MTc1MjAzNjI2OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.zet6SoqL2OdRyriB3uDtyDmDLqUGHyzkJNBeoMRZkl4
+
+###
+# Login admin
+POST http://localhost:8080/api/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "admin@example.com",
+    "password": "password"
+}
+
+###
+# Login user
+POST http://localhost:8080/api/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "userbaru3@example.com",
+    "password": "Password123"
+}
+
+###
+# Get All users
+GET http://localhost:8080/api/admin/users HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+

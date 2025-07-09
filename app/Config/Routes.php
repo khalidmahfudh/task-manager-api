@@ -8,6 +8,8 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', '');
 
 $routes->group('api', function($routes) {
+
+    // Auth API (URL: /api/auth)
     $routes->group('auth', function($routes) {
         $routes->post('register', 'Api\Auth\RegisterController::register');
         $routes->post('login', 'Api\Auth\LoginController::login');
@@ -35,6 +37,11 @@ $routes->group('api', function($routes) {
             $routes->put('(:num)', 'Api\TaskController::update/$1');
             $routes->patch('(:num)', 'Api\TaskController::update/$1'); 
             $routes->delete('(:num)', 'Api\TaskController::delete/$1');
+        });
+
+        // Admin API (URL: /api/admin)
+        $routes->group('admin', ['filter' => 'adminCheck'], function($routes) {
+            $routes->get('users', 'Api\AdminController::index');
         });
     });
 
