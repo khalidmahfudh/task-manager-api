@@ -42,6 +42,7 @@ $routes->group('api', function($routes) {
         // Admin API (URL: /api/admin)
         $routes->group('admin', ['filter' => 'adminCheck'], function($routes) {
             $routes->get('users', 'Api\AdminController::index');
+            $routes->get('users/(:num)', 'Api\AdminController::show/$1');
         });
     });
 

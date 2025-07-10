@@ -54,4 +54,47 @@ class AdminController extends ResourceController
             return $this->failServerError('Failed to retrieve users. Please try again later.');
         }
     }
+
+     /**
+     * Get a single user by ID (Admin Only).
+     * Endpoint: GET /api/admin/users/{id}
+     * Requires: JWT authentication and 'admin' role.
+     *
+     * @param int|string|null $id The user ID.
+     * @return ResponseInterface
+     */
+    public function show($id = null): ResponseInterface
+    {
+        if (empty($id)) {
+            return $this->failValidationErrors('User ID is required.');
+        }
+
+        try {
+            $user = $this->model->find($id);
+
+            if (!$user) {
+                return $this->failNotFound('User with ID ' . $id . ' not found.');
+            }
+
+            // Filter data sensitif seperti password sebelum mengirim respons
+            $filteredUser = [
+                'id'         => $user->id,
+                'name'       => $user->name,
+                'email'      => $user->email,
+                'role'       => $user->role,
+                'created_at' => $user->created_at ? $user->created_at->toDateTimeString() : null,
+                'updated_at' => $user->updated_at ? $user->updated_at->toDateTimeString() : null,
+            ];
+
+            return $this->respond([
+                'status'  => 200,
+                'error'   => false,
+                'message' => 'User retrieved successfully.',
+                'data'    => $filteredUser
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'AdminController: Failed to retrieve user by ID. ' . $e->getMessage() . ' - Trace: ' . $e->getTraceAsString());
+            return $this->failServerError('Failed to retrieve user. Please try again later.');
+        }
+    }
 }
