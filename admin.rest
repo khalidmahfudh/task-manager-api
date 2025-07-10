@@ -16,7 +16,7 @@ POST http://localhost:8080/api/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "email": "userbaru3@example.com",
+    "email": "newemail@example.com",
     "password": "Password123"
 }
 
@@ -32,3 +32,27 @@ GET http://localhost:8080/api/admin/users/3 HTTP/1.1
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
+###
+# Put User (update user full)
+PUT http://localhost:8080/api/admin/users/3 HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "name": "Username Updated",
+    "email": "newemail@example.com",
+    "role": "admin",
+    "password": "Password321",
+    "password_confirmation": "Password321"
+}
+
+###
+# Patch User (update user parsial)
+PATCH http://localhost:8080/api/admin/users/3 HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "password": "Password123",
+    "password_confirmation": "Password123"
+}
