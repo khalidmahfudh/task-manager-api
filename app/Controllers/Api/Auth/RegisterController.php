@@ -54,6 +54,7 @@ class RegisterController extends BaseController
                 log_message('error', 'User model save returned false for email: ' . $user->email);
                 return $this->failServerError('Failed to create user due to an unknown error. Please try again.');
             }
+            
         } catch (\Exception $e) {
             log_message('error', 'Error saving user: ' . $e->getMessage()); // Log error untuk debugging
             return $this->failServerError('An unexpected error occurred during registration. Please try again later.');

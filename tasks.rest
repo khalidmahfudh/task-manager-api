@@ -1,4 +1,24 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjozLCJlbWFpbCI6InVzZXJiYXJ1M0BleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzUxODgxNzcxLCJleHAiOjE3NTE4ODUzNzEsIm5iZiI6MTc1MTg4MTc3MSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.994SQUOWkdKl7JaxaGG___dA7zCatDGnCf0qSSMJvHg
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUyMjIwMDc2LCJleHAiOjE3NTIyMjM2NzYsIm5iZiI6MTc1MjIyMDA3NiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.34l3QG1syl5sB9h72067hMJuMlgy3_cJerv0PhCRrzs
+
+###
+# Login admin
+POST http://localhost:8080/api/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "admin@example.com",
+    "password": "password"
+}
+
+###
+# Login user
+POST http://localhost:8080/api/auth/login HTTP/1.1
+Content-Type: application/json
+
+{
+    "email": "userbaru3@example.com",
+    "password": "Password123"
+}
 
 ### Get All User Tasks
 GET http://localhost:8080/api/tasks

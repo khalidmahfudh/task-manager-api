@@ -42,6 +42,7 @@ $routes->group('api', function($routes) {
         // Admin API (URL: /api/admin)
         $routes->group('admin', ['filter' => 'adminCheck'], function($routes) {
             $routes->get('users', 'Api\AdminController::index');
+            $routes->post('users', 'Api\AdminController::create');
             $routes->get('users/(:num)', 'Api\AdminController::show/$1');
             $routes->put('users/(:num)', 'Api\AdminController::update/$1');  
             $routes->patch('users/(:num)', 'Api\AdminController::update/$1');

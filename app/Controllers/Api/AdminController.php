@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Api;
 
+use App\Entities\User;
 use App\Models\UserModel;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -11,11 +12,11 @@ class AdminController extends ResourceController
 {
     use ResponseTrait;
 
-    protected $model;
+    protected $userModel;
 
     public function __construct()
     {
-        $this->model = new UserModel();
+        $this->userModel = new UserModel();
     }
 
     /**
@@ -28,7 +29,7 @@ class AdminController extends ResourceController
     public function index(): ResponseInterface
     {
         try {
-            $users = $this->model->findAll(); // Mengambil semua data pengguna
+            $users = $this->userModel->findAll(); // Mengambil semua data pengguna
 
             // Memfilter data sensitif seperti password sebelum mengirim respons
             $filteredUsers = array_map(function($user) {
@@ -55,7 +56,7 @@ class AdminController extends ResourceController
         }
     }
 
-     /**
+    /**
      * Get a single user by ID (Admin Only).
      * Endpoint: GET /api/admin/users/{id}
      * Requires: JWT authentication and 'admin' role.
@@ -70,7 +71,7 @@ class AdminController extends ResourceController
         }
 
         try {
-            $user = $this->model->find($id);
+            $user = $this->userModel->find($id);
 
             if (!$user) {
                 return $this->failNotFound('User with ID ' . $id . ' not found.');
@@ -98,7 +99,118 @@ class AdminController extends ResourceController
         }
     }
 
-     /**
+    /**
+     * Create a new user (Admin Only).
+     * Endpoint: POST /api/admin/users
+     * Requires: JWT authentication and 'admin' role.
+     *
+     * @return ResponseInterface
+     */
+    public function create(): ResponseInterface
+    {
+        $input = $this->request->getJson(true);
+
+        
+
+        if ($input === null || !is_array($input)) {
+            return $this->failValidationError('Invalid JSON body provided. Please ensure it is valid JSON.');
+        }
+
+        // Aturan validasi untuk membuat user baru oleh admin
+        $rules = [
+            'name'             => 'required|alpha_space|min_length[3]|max_length[255]',
+            'email'            => 'required|valid_email|is_unique[users.email]',
+            'password'         => 'required|min_length[8]|regex_match[/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d!@#$%^&*()_+]{8,}$/]',
+            'password_confirm' => 'required|matches[password]',
+            'role'             => 'required|in_list[admin,user]', // Admin dapat menentukan role
+        ];
+
+        $messages = [
+            'name' => [
+                'required'    => 'Name is required.',
+                'alpha_space' => 'Name can only contain alphabetic characters and spaces.',
+                'min_length'  => 'Name must be at least 3 characters long.',
+                'max_length'  => 'Name cannot exceed 255 characters.',
+            ],
+            'email' => [
+                'required'    => 'Email is required.',
+                'valid_email' => 'Please enter a valid email address.',
+                'is_unique'   => 'Sorry, that email has already been taken.',
+            ],
+            'password' => [
+                'required'    => 'Password is required.',
+                'min_length'  => 'Password must be at least 8 characters long.',
+                'regex_match' => 'Password must contain at least one uppercase letter, one number, and be at least 8 characters long.',
+            ],
+            'password_confirm' => [
+                'required' => 'Password confirmation is required.',
+                'matches'  => 'Password confirmation does not match the password.',
+            ],
+            'role' => [
+                'required'  => 'Role is required.',
+                'in_list'   => 'Role must be either "admin" or "user".',
+            ],
+        ];
+
+        // Validasi input
+        if (!$this->validate($rules, $messages)) {
+            $errors = $this->validator->getErrors();
+            log_message('error', 'AdminController Create User Validation Errors: ' . json_encode($errors));
+            return $this->failValidationErrors($errors);
+        }
+
+        // Buat objek user baru
+        $user = new User();
+        $user->fill($input);
+
+        // Hapus password_confirm sebelum menyimpan ke database
+        unset($user->password_confirm);
+
+        try {
+            if ($this->userModel->save($user)) {
+                // Ambil ID yang baru di-insert dari model
+                $newlyInsertedId = $this->userModel->getInsertID();
+
+                // Ambil ulang user dari database menggunakan ID yang baru di-insert.
+                $createdUser = $this->userModel->find($newlyInsertedId);
+
+                // Pastikan $createdUser tidak null sebelum diakses
+                if ($createdUser === null) {
+                    // Handle error: user not found after insertion (sangat jarang)
+                    log_message('error', 'Failed to retrieve newly created user with ID: ' . $newlyInsertedId);
+                    return $this->failServerError('Failed to retrieve created user data.');
+    }
+
+                $filteredUser = [
+                    'id'         => $createdUser->id, 
+                    'name'       => $createdUser->name,
+                    'email'      => $createdUser->email,
+                    'role'       => $createdUser->role,
+                    'created_at' => $createdUser->created_at ? $createdUser->created_at->toDateTimeString() : null,
+                    'updated_at' => $createdUser->updated_at ? $createdUser->updated_at->toDateTimeString() : null,
+                ];
+
+                return $this->respondCreated([
+                    'status'  => 201, // 201 Created
+                    'error'   => false,
+                    'message' => 'User created successfully.',
+                    'data'    => $filteredUser
+                ]);
+            } else {
+                $modelErrors = $this->userModel->errors();
+                if (!empty($modelErrors)) {
+                    log_message('error', 'User Model Create Errors: ' . json_encode($modelErrors));
+                    return $this->failValidationErrors($modelErrors);
+                }
+                return $this->fail('Failed to create user. Internal server error.', 500);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'AdminController: Failed to create user. ' . $e->getMessage() . ' - Trace: ' . $e->getTraceAsString());
+            return $this->failServerError('Failed to create user. Please try again later.');
+        }
+    }
+
+    /**
      * Update an existing user by ID (Admin Only).
      * Endpoint: PUT/PATCH /api/admin/users/{id}
      * Requires: JWT authentication and 'admin' role.
@@ -112,7 +224,7 @@ class AdminController extends ResourceController
             return $this->failValidationErrors('User ID is required for update.');
         }
 
-        $user = $this->model->find($id);
+        $user = $this->userModel->find($id);
 
         if (!$user) {
             return $this->failNotFound('User with ID ' . $id . ' not found.');
@@ -177,9 +289,9 @@ class AdminController extends ResourceController
             unset($user->password_confirmation);
         }
 
-        if ($this->model->save($user)) {
+        if ($this->userModel->save($user)) {
             // Ambil ulang user untuk mendapatkan data terbaru dan ter-filter
-            $updatedUser = $this->model->find($user->id);
+            $updatedUser = $this->userModel->find($user->id);
             $filteredUser = [
                 'id'         => $updatedUser->id,
                 'name'       => $updatedUser->name,
@@ -196,7 +308,7 @@ class AdminController extends ResourceController
                 'data'    => $filteredUser
             ]);
         } else {
-            $modelErrors = $this->model->errors();
+            $modelErrors = $this->userModel->errors();
             if (!empty($modelErrors)) {
                 log_message('error', 'User Model Update Errors: ' . json_encode($modelErrors));
                 return $this->failValidationErrors($modelErrors);

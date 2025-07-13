@@ -33,8 +33,14 @@ class CreateUsersTable extends Migration
                 'constraint' => ['user', 'admin'],
                 'default'    => 'user',
             ],
-            'created_at datetime default current_timestamp', 
-            'updated_at datetime default current_timestamp on update current_timestamp', 
+            'created_at' => [ 
+                'type'    => 'DATETIME',
+                'null'    => true, 
+            ],
+            'updated_at' => [ 
+                'type'    => 'DATETIME',
+                'null'    => true, 
+            ],
             'deleted_at' => [
                 'type'       => 'DATETIME',
                 'null'       => true,
