@@ -1,4 +1,4 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUyMzcwNTQ4LCJleHAiOjE3NTIzNzQxNDgsIm5iZiI6MTc1MjM3MDU0OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.fayDXudkOC5Ff9DqUGKbtIj1GYDeAY5VHrvFlGpqCd0
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUyNDA3MDMzLCJleHAiOjE3NTI0MTA2MzMsIm5iZiI6MTc1MjQwNzAzMywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.WwWBBG4Ae9g4dtgNhKTlU7AakNwLmcD0FaJFZjmrFGw
 
 ###
 # Login admin
@@ -48,21 +48,21 @@ Content-Type: application/json
 
 ###
 # Put User (update user full)
-PUT http://localhost:8080/api/admin/users/3 HTTP/1.1
+PUT http://localhost:8080/api/admin/users/9 HTTP/1.1
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "name": "Username Updated",
+    "name": "Boston boston",
     "email": "newemail@example.com",
-    "role": "admin",
+    "role": "user",
     "password": "Password321",
     "password_confirmation": "Password321"
 }
 
 ###
 # Patch User (update user parsial)
-PATCH http://localhost:8080/api/admin/users/3 HTTP/1.1
+PATCH http://localhost:8080/api/admin/users/10 HTTP/1.1
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
@@ -70,3 +70,8 @@ Content-Type: application/json
     "password": "Password123",
     "password_confirmation": "Password123"
 }
+
+###
+# Delete User (soft delete)
+DELETE http://localhost:8080/api/admin/users/10 HTTP/1.1
+Authorization: Bearer {{accessToken}}

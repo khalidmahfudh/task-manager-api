@@ -1,4 +1,4 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUyMjIwMDc2LCJleHAiOjE3NTIyMjM2NzYsIm5iZiI6MTc1MjIyMDA3NiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.34l3QG1syl5sB9h72067hMJuMlgy3_cJerv0PhCRrzs
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxMCwiZW1haWwiOiJzYWZpcmFAZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc1MjQwODMxOSwiZXhwIjoxNzUyNDExOTE5LCJuYmYiOjE3NTI0MDgzMTksImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC8ifQ.mgBpUkq4m9BU51cXqoYHmUfzahhe2thvilPxJCaYDLw
 
 ###
 # Login admin
@@ -16,7 +16,7 @@ POST http://localhost:8080/api/auth/login HTTP/1.1
 Content-Type: application/json
 
 {
-    "email": "userbaru3@example.com",
+    "email": "safira@example.com",
     "password": "Password123"
 }
 
@@ -32,8 +32,8 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "title": "Belajar Laravel",
-    "description": "Selesaikan tutorial Laravel sampai tuntas.",
+    "title": "Belajar Javascript",
+    "description": "Selesaikan tutorial Javascript sampai tuntas.",
     "status": "in-progress",
     "due_date": "2025-07-31 18:00:00"
 }
@@ -65,3 +65,8 @@ Content-Type: application/json
 {
     "status": "completed"
 }
+
+###
+# Delete Task 
+DELETE http://localhost:8080/api/tasks/6 HTTP/1.1
+Authorization: Bearer {{accessToken}}

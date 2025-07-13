@@ -4,19 +4,28 @@ namespace App\Controllers\Api;
 
 use App\Entities\User;
 use App\Models\UserModel;
+use App\Models\TaskModel;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\RESTful\ResourceController;
 
+/**
+ * Class AdminController
+ * @package App\Controllers\Api
+ *
+ * @property object $request 
+ */
 class AdminController extends ResourceController
 {
     use ResponseTrait;
 
     protected $userModel;
+    protected $taskModel;
 
     public function __construct()
     {
         $this->userModel = new UserModel();
+        $this->taskModel = new TaskModel();
     }
 
     /**
@@ -110,8 +119,6 @@ class AdminController extends ResourceController
     {
         $input = $this->request->getJson(true);
 
-        
-
         if ($input === null || !is_array($input)) {
             return $this->failValidationError('Invalid JSON body provided. Please ensure it is valid JSON.');
         }
@@ -179,7 +186,7 @@ class AdminController extends ResourceController
                     // Handle error: user not found after insertion (sangat jarang)
                     log_message('error', 'Failed to retrieve newly created user with ID: ' . $newlyInsertedId);
                     return $this->failServerError('Failed to retrieve created user data.');
-    }
+            }
 
                 $filteredUser = [
                     'id'         => $createdUser->id, 
@@ -314,6 +321,60 @@ class AdminController extends ResourceController
                 return $this->failValidationErrors($modelErrors);
             }
             return $this->fail('Failed to update user. Internal server error.', 500);
+        }
+    }
+
+    /**
+     * Delete a user by ID (Admin Only).
+     * Endpoint: DELETE /api/admin/users/{id}
+     * Requires: JWT authentication and 'admin' role.
+     *
+     * @param int|string|null $id The user ID.
+     * @return ResponseInterface
+     */
+    public function delete($id = null): ResponseInterface
+    {
+        // 1. Validasi ID yang diberikan
+        if ($id === null) {
+            return $this->failValidationError('User ID is required.');
+        }
+
+        // 2. Cari pengguna yang akan dihapus
+        $userToDelete = $this->userModel->find($id);
+
+        if ($userToDelete === null) {
+            return $this->failNotFound('User not found.');
+        }
+
+        // --- Pencegahan Admin Menghapus Akunnya Sendiri ---
+        $currentAdminId = $this->request->user_id; // Mengambil ID admin yang sedang login
+
+        if ($id == $currentAdminId) {
+            return $this->failForbidden('You cannot delete your own admin account.');
+        }
+
+        // 3. Lakukan Soft Delete
+        try {
+            // Metode delete() pada Model dengan useSoftDeletes = true akan mengisi deleted_at
+            if ($this->userModel->delete($id)) {
+                return $this->respondDeleted([ // Menggunakan respondDeleted untuk status 200 OK atau 204 No Content (opsional)
+                    'status'  => 200, // Atau 204 No Content jika tidak ada body respons
+                    'error'   => false,
+                    'message' => 'User successfully deleted (soft deleted).',
+                    'data'    => ['id' => $id] // Mengembalikan ID user yang dihapus
+                ]);
+            } else {
+                // Jika delete() mengembalikan false (misalnya karena validasi model atau masalah DB lain)
+                $errors = $this->userModel->errors();
+                if (!empty($errors)) {
+                    return $this->failValidationErrors($errors); // Mengembalikan error validasi model jika ada
+                }
+                log_message('error', 'User soft delete failed for ID: ' . $id . ' with no specific errors.');
+                return $this->failServerError('Failed to delete user due to an unknown error. Please try again.');
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Exception during user deletion for ID ' . $id . ': ' . $e->getMessage() . ' - Trace: ' . $e->getTraceAsString());
+            return $this->failServerError('An unexpected error occurred during user deletion. Please try again later.');
         }
     }
 }
