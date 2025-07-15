@@ -47,6 +47,8 @@ $routes->group('api', function($routes) {
             $routes->put('users/(:num)', 'Api\AdminController::update/$1');  
             $routes->patch('users/(:num)', 'Api\AdminController::update/$1');
             $routes->delete('users/(:num)', 'Api\AdminController::delete/$1');
+
+            $routes->get('tasks', 'Api\AdminController::getAllTasks');
         });
     });
 

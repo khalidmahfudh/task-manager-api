@@ -1,4 +1,4 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUyNDA3MDMzLCJleHAiOjE3NTI0MTA2MzMsIm5iZiI6MTc1MjQwNzAzMywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.WwWBBG4Ae9g4dtgNhKTlU7AakNwLmcD0FaJFZjmrFGw
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUyNTgzMDcyLCJleHAiOjE3NTI1ODY2NzIsIm5iZiI6MTc1MjU4MzA3MiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.7V8Ou1b3ndY14KGjB1aaJwcyMABIUlZdFEDHNlo_Dsc
 
 ###
 # Login admin
@@ -75,3 +75,9 @@ Content-Type: application/json
 # Delete User (soft delete)
 DELETE http://localhost:8080/api/admin/users/10 HTTP/1.1
 Authorization: Bearer {{accessToken}}
+
+###
+# Get All tasks
+GET http://localhost:8080/api/admin/tasks HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
