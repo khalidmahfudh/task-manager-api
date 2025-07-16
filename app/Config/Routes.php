@@ -41,14 +41,14 @@ $routes->group('api', function($routes) {
 
         // Admin API (URL: /api/admin)
         $routes->group('admin', ['filter' => 'adminCheck'], function($routes) {
-            $routes->get('users', 'Api\AdminController::index');
-            $routes->post('users', 'Api\AdminController::create');
-            $routes->get('users/(:num)', 'Api\AdminController::show/$1');
-            $routes->put('users/(:num)', 'Api\AdminController::update/$1');  
-            $routes->patch('users/(:num)', 'Api\AdminController::update/$1');
-            $routes->delete('users/(:num)', 'Api\AdminController::delete/$1');
+            $routes->get('users', 'Api\AdminUsersController::index');
+            $routes->post('users', 'Api\AdminUsersController::create');
+            $routes->get('users/(:num)', 'Api\AdminUsersController::show/$1');
+            $routes->put('users/(:num)', 'Api\AdminUsersController::update/$1');  
+            $routes->patch('users/(:num)', 'Api\AdminUsersController::update/$1');
+            $routes->delete('users/(:num)', 'Api\AdminUsersController::delete/$1');
 
-            $routes->get('tasks', 'Api\AdminController::getAllTasks');
+            $routes->get('tasks', 'Api\AdminTasksController::index');
         });
     });
 
