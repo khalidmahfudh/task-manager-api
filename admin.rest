@@ -101,3 +101,27 @@ Content-Type: application/json
     "status": "in-progress",
     "due_date": "2025-07-31 18:00:00"
 }
+
+###
+# Put Task (update full task)
+PUT http://localhost:8080/api/admin/tasks/8 HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "user_id": "3",
+    "title": "Membuat Homepage perusahaan",
+    "description": "Selesaikan Homepage sampai tuntas.",
+    "status": "in-progress",
+    "due_date": "2025-07-31 18:00:00"
+}
+
+###
+# Patch Task (update task parsial)
+PATCH http://localhost:8080/api/admin/tasks/8 HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "status": "completed"
+}

@@ -51,6 +51,8 @@ $routes->group('api', function($routes) {
             $routes->get('tasks', 'Api\AdminTasksController::index');
             $routes->post('tasks', 'Api\AdminTasksController::create');
             $routes->get('tasks/(:num)', 'Api\AdminTasksController::show/$1');
+            $routes->put('tasks/(:num)', 'Api\AdminTasksController::update/$1');  
+            $routes->patch('tasks/(:num)', 'Api\AdminTasksController::update/$1');
         });
     });
 

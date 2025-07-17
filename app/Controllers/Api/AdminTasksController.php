@@ -228,4 +228,124 @@ class AdminTasksController extends ResourceController
             return $this->failServerError('An unexpected error occurred during task creation. Please try again later.');
         }
     }
+
+    /**
+     * Update an existing task by ID (Admin Only).
+     * Endpoint: PUT/PATCH /api/admin/tasks/{id}
+     * Requires: JWT authentication and 'admin' role.
+     *
+     * @param int|string|null $id The task ID.
+     * @return ResponseInterface
+     */
+    public function update($id = null): ResponseInterface 
+    {
+        // 1. Validasi ID tugas
+        if (empty($id)) {
+            return $this->failValidationError('Task ID is required.');
+        }
+
+        // 2. Ambil data input dari request
+        $input = $this->request->getJson(true);
+
+        if ($input === null || !is_array($input)) {
+            return $this->failValidationError('Invalid JSON body provided. Please ensure it is valid JSON.');
+        }
+
+        try {
+            // 3. Cari tugas yang akan diperbarui
+            $task = $this->taskModel->find($id);
+
+            // 4. Cek apakah tugas ditemukan
+            if (!$task) {
+                return $this->failNotFound('Task with ID ' . $id . ' not found.');
+            }
+
+            // 5. Definisikan aturan validasi untuk pembaruan tugas
+            // 'permit_empty' digunakan untuk kolom yang tidak wajib di-update
+            // 'is_not_unique' untuk user_id memastikan user_id baru jika diberikan, valid
+            $rules = [
+                'user_id'     => 'permit_empty|integer|is_not_unique[users.id]',
+                'title'       => 'permit_empty|min_length[3]|max_length[255]',
+                'description' => 'permit_empty',
+                'status'      => 'permit_empty|in_list[pending,in-progress,completed]',
+                'due_date'    => 'permit_empty|valid_date',
+            ];
+
+            $messages = [
+                'user_id' => [
+                    'integer'       => 'User ID must be an integer.',
+                    'is_not_unique' => 'The provided User ID does not exist.'
+                ],
+                'title' => [
+                    'min_length' => 'Title must be at least 3 characters long.',
+                    'max_length' => 'Title cannot exceed 255 characters.',
+                ],
+                'status' => [
+                    'in_list'  => 'Status must be one of: pending, in-progress, or completed.',
+                ],
+                'due_date' => [
+                    'valid_date' => 'Due date must be a valid date format (YYYY-MM-DD HH:MM:SS).'
+                ],
+            ];
+
+            // 6. Validasi input
+            if (!$this->validate($rules, $messages)) {
+                $errors = $this->validator->getErrors();
+                log_message('error', 'AdminTasksController Update Task Validation Errors: ' . json_encode($errors));
+                return $this->failValidationErrors($errors);
+            }
+
+            // 7. Isi objek Task Entity dengan data input yang valid
+            // Ini akan memperbarui properti yang ada di $task dengan nilai dari $input
+            $task->fill($input);
+
+            // 8. Lakukan penyimpanan ke database
+            // save() akan mendeteksi jika ini adalah update karena $task memiliki ID
+            if ($this->taskModel->save($task)) {
+                // Ambil ulang HANYA kolom ID dan timestamps yang diperbarui dari database
+                // karena kolom lainnya sudah ada di $input atau di $task yang sudah di-fill
+                $dbGeneratedData = $this->taskModel
+                                        ->select('id, created_at, updated_at, deleted_at')
+                                        ->find($id); // Gunakan ID yang sama untuk find
+
+                if ($dbGeneratedData === null) {
+                    log_message('error', 'Failed to retrieve database generated data for task with ID: ' . $id);
+                    // Meskipun task mungkin sudah terupdate, responsnya harus konsisten
+                    return $this->failServerError('Task updated, but failed to retrieve crucial data for response.');
+                }
+
+                // Gabungkan data input yang valid dengan data yang diambil dari database (terutama timestamps)
+                $filteredTask = [
+                    'id'          => $dbGeneratedData->id,
+                    'title'       => $task->title,       // Ambil dari $task yang sudah di-fill/update
+                    'description' => $task->description,  // Ambil dari $task yang sudah di-fill/update
+                    'user_id'     => $task->user_id,     // Ambil dari $task yang sudah di-fill/update
+                    'status'      => $task->status,
+                    'due_date'    => $task->due_date,
+                    'created_at'  => $dbGeneratedData->created_at ? $dbGeneratedData->created_at->toDateTimeString() : null,
+                    'updated_at'  => $dbGeneratedData->updated_at ? $dbGeneratedData->updated_at->toDateTimeString() : null,
+                    'deleted_at'  => $dbGeneratedData->deleted_at ? $dbGeneratedData->deleted_at->toDateTimeString() : null,
+                ];
+
+                // 9. Kembalikan respons sukses
+                return $this->respond([
+                    'status'  => 200, // 200 OK untuk update
+                    'error'   => false,
+                    'message' => 'Task updated successfully.',
+                    'data'    => $filteredTask
+                ]);
+            } else {
+                // Jika save() mengembalikan false (misalnya karena validasi model tambahan)
+                $modelErrors = $this->taskModel->errors();
+                if (!empty($modelErrors)) {
+                    log_message('error', 'Task Model Update Errors: ' . json_encode($modelErrors));
+                    return $this->failValidationErrors($modelErrors);
+                }
+                return $this->fail('Failed to update task. Internal server error.', 500);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Exception during task update: ' . $e->getMessage() . ' - Trace: ' . $e->getTraceAsString());
+            return $this->failServerError('An unexpected error occurred during task update. Please try again later.');
+        }
+    }
 }
