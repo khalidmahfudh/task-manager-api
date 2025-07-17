@@ -49,6 +49,7 @@ $routes->group('api', function($routes) {
             $routes->delete('users/(:num)', 'Api\AdminUsersController::delete/$1');
 
             $routes->get('tasks', 'Api\AdminTasksController::index');
+            $routes->get('tasks/(:num)', 'Api\AdminTasksController::show/$1');
         });
     });
 

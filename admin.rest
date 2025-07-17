@@ -1,4 +1,4 @@
-@accessToken =eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUyNjQyODk4LCJleHAiOjE3NTI2NDY0OTgsIm5iZiI6MTc1MjY0Mjg5OCwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.6DRxqHXgO0KY-fq_wRA0ArfGZqVIbHjyIu7FI6SGUSQ
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUyNzE0OTMzLCJleHAiOjE3NTI3MTg1MzMsIm5iZiI6MTc1MjcxNDkzMywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.7LQw8CFPHfmQ7YP4jAmShZAnqXXGu9AdGLvSf8h1bXM
 
 ###
 # Login admin
@@ -79,5 +79,11 @@ Authorization: Bearer {{accessToken}}
 ###
 # Get All tasks
 GET http://localhost:8080/api/admin/tasks HTTP/1.1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+###
+# Get Task by ID
+GET http://localhost:8080/api/admin/tasks/2 HTTP/1.1
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
