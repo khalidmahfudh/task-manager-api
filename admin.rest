@@ -73,7 +73,7 @@ Content-Type: application/json
 
 ###
 # Delete User (soft delete)
-DELETE http://localhost:8080/api/admin/users/10 HTTP/1.1
+DELETE http://localhost:8080/api/admin/users/7 HTTP/1.1
 Authorization: Bearer {{accessToken}}
 
 ###
@@ -95,22 +95,22 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "user_id": "8",
-    "title": "Membuat Kerajinan tangan",
-    "description": "Selesaikan Kerajinan tangan sampai tuntas.",
+    "user_id": "7",
+    "title": "New Task",
+    "description": "Selesaikan Task sampai tuntas.",
     "status": "in-progress",
     "due_date": "2025-07-31 18:00:00"
 }
 
 ###
 # Put Task (update full task)
-PUT http://localhost:8080/api/admin/tasks/8 HTTP/1.1
+PUT http://localhost:8080/api/admin/tasks/7 HTTP/1.1
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "user_id": "3",
-    "title": "Membuat Game mobile",
+    "user_id": "7",
+    "title": "Membuat Game PC",
     "description": "Selesaikan pembuatan game sampai tuntas.",
     "status": "in-progress",
     "due_date": "2025-07-31 18:00:00"
@@ -128,5 +128,5 @@ Content-Type: application/json
 
 ###
 # Delete Task (soft delete)
-DELETE http://localhost:8080/api/admin/tasks/8 HTTP/1.1
+DELETE http://localhost:8080/api/admin/tasks/7 HTTP/1.1
 Authorization: Bearer {{accessToken}}
