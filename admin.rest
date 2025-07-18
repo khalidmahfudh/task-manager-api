@@ -1,4 +1,4 @@
-@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUyNzE0OTMzLCJleHAiOjE3NTI3MTg1MzMsIm5iZiI6MTc1MjcxNDkzMywiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.7LQw8CFPHfmQ7YP4jAmShZAnqXXGu9AdGLvSf8h1bXM
+@accessToken = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUyODQ4MTY5LCJleHAiOjE3NTI4NTE3NjksIm5iZiI6MTc1Mjg0ODE2OSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwLyJ9.msq-D9iiGJQ5DdQzs6Tn-aEXDSuBXz49p1V6Pt_5hK4
 
 ###
 # Login admin
@@ -28,7 +28,7 @@ Content-Type: application/json
 
 ###
 # Get User by ID
-GET http://localhost:8080/api/admin/users/3 HTTP/1.1
+GET http://localhost:8080/api/admin/users/8 HTTP/1.1
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
@@ -95,9 +95,9 @@ Authorization: Bearer {{accessToken}}
 Content-Type: application/json
 
 {
-    "user_id": "2",
-    "title": "Membuat Homepage perusahaan",
-    "description": "Selesaikan Homepage sampai tuntas.",
+    "user_id": "8",
+    "title": "Membuat Kerajinan tangan",
+    "description": "Selesaikan Kerajinan tangan sampai tuntas.",
     "status": "in-progress",
     "due_date": "2025-07-31 18:00:00"
 }
@@ -110,8 +110,8 @@ Content-Type: application/json
 
 {
     "user_id": "3",
-    "title": "Membuat Homepage perusahaan",
-    "description": "Selesaikan Homepage sampai tuntas.",
+    "title": "Membuat Game mobile",
+    "description": "Selesaikan pembuatan game sampai tuntas.",
     "status": "in-progress",
     "due_date": "2025-07-31 18:00:00"
 }
@@ -125,3 +125,8 @@ Content-Type: application/json
 {
     "status": "completed"
 }
+
+###
+# Delete Task (soft delete)
+DELETE http://localhost:8080/api/admin/tasks/8 HTTP/1.1
+Authorization: Bearer {{accessToken}}

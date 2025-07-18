@@ -53,6 +53,7 @@ $routes->group('api', function($routes) {
             $routes->get('tasks/(:num)', 'Api\AdminTasksController::show/$1');
             $routes->put('tasks/(:num)', 'Api\AdminTasksController::update/$1');  
             $routes->patch('tasks/(:num)', 'Api\AdminTasksController::update/$1');
+            $routes->delete('tasks/(:num)', 'Api\AdminTasksController::delete/$1');
         });
     });
 

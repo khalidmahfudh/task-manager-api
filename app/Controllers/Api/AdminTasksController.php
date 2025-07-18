@@ -348,4 +348,52 @@ class AdminTasksController extends ResourceController
             return $this->failServerError('An unexpected error occurred during task update. Please try again later.');
         }
     }
+
+     /**
+     * Delete a task by ID (Admin Only).
+     * Uses soft deletes if configured in TaskModel.
+     * Endpoint: DELETE /api/admin/tasks/{id}
+     * Requires: JWT authentication and 'admin' role.
+     *
+     * @param int|string|null $id The task ID.
+     * @return ResponseInterface
+     */
+    public function delete($id = null): ResponseInterface 
+    {
+        // 1. Validasi ID tugas
+        if (empty($id)) {
+            return $this->failValidationError('Task ID is required.');
+        }
+
+        try {
+            // 2. Cari tugas yang akan dihapus
+            $task = $this->taskModel->find($id);
+
+            // 3. Cek apakah tugas ditemukan
+            if (!$task) {
+                return $this->failNotFound('Task with ID ' . $id . ' not found.');
+            }
+
+            // 4. Lakukan penghapusan (soft delete)
+            if ($this->taskModel->delete($id)) {
+                // 5. Kembalikan respons sukses
+                return $this->respondDeleted([ // Menggunakan respondDeleted untuk kode 200 OK atau 204 No Content
+                    'status'  => 200,
+                    'error'   => false,
+                    'message' => 'Task with ID ' . $id . ' deleted successfully (soft deleted).'
+                ]);
+            } else {
+                // Jika delete() mengembalikan false
+                $modelErrors = $this->taskModel->errors();
+                if (!empty($modelErrors)) {
+                    log_message('error', 'Task Model Delete Errors: ' . json_encode($modelErrors));
+                    return $this->failServerError('Failed to delete task due to model error.');
+                }
+                return $this->fail('Failed to delete task. Internal server error.', 500);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Exception during task deletion: ' . $e->getMessage() . ' - Trace: ' . $e->getTraceAsString());
+            return $this->failServerError('An unexpected error occurred during task deletion. Please try again later.');
+        }
+    }
 }
